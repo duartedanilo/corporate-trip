@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TravelOrder extends Model
 {
+    use HasFactory;
+
     protected $table = 'travel_order';
 
     protected $fillable = ['requester', 'destination', 'departure_date', 'return_date'];

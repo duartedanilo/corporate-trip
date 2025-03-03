@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\TravelOrder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -59,5 +60,27 @@ class TravelOrderTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+    }
+
+    public function test_show_travel_order_by_id()
+    {
+        TravelOrder::factory()->create();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order/1');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure(['id', 'requester', 'destination', 'departure_date', 'return_date', 'status']);
+    }
+
+    public function test_show_non_existing_travel_order()
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order/1');
+
+        $response->assertStatus(404);
     }
 }

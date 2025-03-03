@@ -15,4 +15,9 @@ class TravelOrderRepository
     {
         return TravelOrder::create($data);
     }
+
+    public function findById(int $id)
+    {
+        return TravelOrder::findOrFail($id);
+    }
 }

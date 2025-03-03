@@ -28,12 +28,9 @@ class TravelOrderController extends Controller
         return $this->repository->create($payload);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        return $this->repository->findById($id);
     }
 
     /**
