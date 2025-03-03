@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TravelOrderRequest;
 use App\Repositories\TravelOrderRepository;
 use Illuminate\Http\Request;
 
@@ -16,12 +17,15 @@ class TravelOrderController extends Controller
         return $this->repository->getTravelOrderFromAuthenticatedUser($requester);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(TravelOrderRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $payload = [
+            ...$validated,
+            'requester' => auth()->user()->id,
+        ];
+        return $this->repository->create($payload);
     }
 
     /**

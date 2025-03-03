@@ -10,4 +10,9 @@ class TravelOrderRepository
     {
         return TravelOrder::where('requester', $requester)->get();
     }
+
+    public function create(array $data)
+    {
+        return TravelOrder::create($data);
+    }
 }

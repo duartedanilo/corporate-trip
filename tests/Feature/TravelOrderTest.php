@@ -36,4 +36,28 @@ class TravelOrderTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_create_new_travel_order()
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->postJson('/api/travel-order', [
+            'destination' => 'Belém',
+            'departure_date' => '2025-03-02 22:00:00',
+            'return_date' => '2025-03-10 22:00:00',
+        ]);
+
+        $response->assertStatus(201);
+    }
+
+    public function test_create_new_travel_order_without_required_fields()
+    {
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->postJson('/api/travel-order', [
+            'destination' => 'Belém',
+        ]);
+
+        $response->assertStatus(422);
+    }
 }

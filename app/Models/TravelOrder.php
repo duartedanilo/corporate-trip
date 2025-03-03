@@ -9,6 +9,8 @@ class TravelOrder extends Model
 {
     protected $table = 'travel_order';
 
+    protected $fillable = ['requester', 'destination', 'departure_date', 'return_date'];
+
     public const STATUS = [
         0 => 'requested',
         1 => 'approved',
