@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\TravelOrder;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -91,6 +92,57 @@ class TravelOrderTest extends TestCase
         ])->get('/api/travel-order?destination=São Paulo');
 
         $response->assertStatus(200)->assertJsonCount(2);
+    }
+
+    public function test_list_travel_orders_filtered_by_date_range(): void
+    {
+        $today = Carbon::now();
+        $nextWeek = $today->addWeek();
+
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'departure_date' => $today,
+            'return_date' => $nextWeek,
+        ]);
+
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'departure_date' => $today->addMonth(),
+            'return_date' => $nextWeek->addMonth(),
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order?from=' . $today . '&to=' . $nextWeek);
+
+        $response->assertStatus(200)->assertJsonCount(1);
+    }
+
+    public function test_list_travel_orders_filtered_by_from_date(): void
+    {
+        $today = Carbon::now();
+        $nextWeek = Carbon::now()->addWeek();
+
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'departure_date' => $today,
+            'return_date' => $nextWeek,
+        ]);
+
+        $next2Days = Carbon::now()->addDays(2);
+        $nextWeekPlus2Days = Carbon::now()->addWeek()->addDays(2);
+
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'departure_date' => $next2Days,
+            'return_date' => $nextWeekPlus2Days,
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order?from=' . $today->addDay());
+
+        $response->assertStatus(200)->assertJsonCount(1);
     }
 
     public function test_create_new_travel_order()

@@ -19,6 +19,17 @@ class TravelOrderRepository
             $travelOrder->where('destination', $filter['destination']);
         }
 
+        if (isset($filter['from']) && isset($filter['to'])) {
+            $travelOrder->where(function ($query) use ($filter) {
+                $query->where('departure_date', '>=', $filter['from'])
+                    ->where('return_date', '<=', $filter['to']);
+            });
+        } elseif (isset($filter['from'])) {
+            $travelOrder->where('departure_date', '>=', $filter['from']);
+        } elseif (isset($filter['to'])) {
+            $travelOrder->where('return_date', '<=', $filter['to']);
+        }
+
         return $travelOrder->get();
     }
 
