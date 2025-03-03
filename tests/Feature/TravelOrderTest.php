@@ -18,8 +18,10 @@ class TravelOrderTest extends TestCase
     {
         parent::setUp();
 
-        $user = User::factory()->create();
-        $this->token = JWTAuth::fromUser($user);
+        $user = User::factory()->create([
+            'is_admin' => true
+        ]);
+        $this->token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
     }
 
     public function test_list_travel_orders_with_success(): void
@@ -92,7 +94,7 @@ class TravelOrderTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
-        ])->patch('/api/travel-order/1/status', ['status' => 'approved']);
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'approved']);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('travel_order', ['id' => 1, 'status' => 1]);
@@ -121,5 +123,19 @@ class TravelOrderTest extends TestCase
         ])->patchJson('/api/travel-order/1/status', ['status' => 'requested']);
 
         $response->assertStatus(422);
+    }
+
+    public function test_update_status_without_admin_user()
+    {
+        TravelOrder::factory()->create();
+
+        $regularUser = User::factory()->create();
+        $token = JWTAuth::claims(['is_admin' => $regularUser->is_admin])->fromUser($regularUser);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'requested']);
+
+        $response->assertStatus(401);
     }
 }
