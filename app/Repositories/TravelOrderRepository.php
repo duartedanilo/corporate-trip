@@ -20,4 +20,11 @@ class TravelOrderRepository
     {
         return TravelOrder::findOrFail($id);
     }
+
+    public function updateStatus(int $id, string $status)
+    {
+        $travelOrder = TravelOrder::findOrFail($id);
+        $travelOrder->status = $status;
+        $travelOrder->save();
+    }
 }

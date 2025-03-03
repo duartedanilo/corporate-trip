@@ -83,4 +83,43 @@ class TravelOrderTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_update_status()
+    {
+        TravelOrder::factory()->create([
+            'requester' => User::factory()
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->patch('/api/travel-order/1/status', ['status' => 'approved']);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('travel_order', ['id' => 1, 'status' => 1]);
+    }
+
+    public function test_update_travel_order_status_with_requester()
+    {
+        $travelOrder = TravelOrder::factory()->create([
+            'requester' => User::factory()
+        ]);
+        $token = JWTAuth::fromUser($travelOrder->user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'approved']);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_update_status_with_invalid_value()
+    {
+        TravelOrder::factory()->create();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'requested']);
+
+        $response->assertStatus(422);
+    }
 }

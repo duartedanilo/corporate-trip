@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TravelOrderRequest;
+use App\Http\Requests\UpdateStatusRequest;
 use App\Repositories\TravelOrderRepository;
 use Illuminate\Http\Request;
 
@@ -33,19 +34,19 @@ class TravelOrderController extends Controller
         return $this->repository->findById($id);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function updateStatus(UpdateStatusRequest $request, int $id)
     {
-        //
-    }
+        $validated = $request->validated();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $travelOrder = $this->repository->findById($id);
+        $userId = auth()->user()->id;
+
+        if ($travelOrder->requester == $userId) {
+            return response()->json(['message' => 'The requester can\'t change travel order status'], 403);
+        }
+
+        $this->repository->updateStatus($id, $validated['status']);
+
+        return response()->json(['message' => 'Status updated successfully!']);
     }
 }
