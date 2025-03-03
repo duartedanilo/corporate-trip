@@ -74,6 +74,25 @@ class TravelOrderTest extends TestCase
         $response->assertStatus(200)->assertJsonCount(0);
     }
 
+    public function test_list_travel_orders_filtered_by_destination(): void
+    {
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'destination' => 'Belém'
+        ]);
+
+        TravelOrder::factory(2)->create([
+            'requester' => $this->user,
+            'destination' => 'São Paulo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order?destination=São Paulo');
+
+        $response->assertStatus(200)->assertJsonCount(2);
+    }
+
     public function test_create_new_travel_order()
     {
         $response = $this->withHeaders([

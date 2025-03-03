@@ -15,6 +15,10 @@ class TravelOrderRepository
             $travelOrder->where('status', Status::fromName($filter['status']));
         }
 
+        if (isset($filter['destination'])) {
+            $travelOrder->where('destination', $filter['destination']);
+        }
+
         return $travelOrder->get();
     }
 
