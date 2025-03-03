@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TravelOrderRequest;
 use App\Http\Requests\UpdateStatusRequest;
 use App\Repositories\TravelOrderRepository;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TravelOrderController extends Controller
 {
@@ -45,6 +45,10 @@ class TravelOrderController extends Controller
 
         if ($travelOrder->requester == $userId) {
             return response()->json(['message' => 'The requester can\'t change travel order status'], 403);
+        }
+
+        if (in_array($validated['status'], ['cancelled', 2]) && $travelOrder->status === 'approved' && Carbon::now() > $travelOrder->departure_date) {
+            return response()->json(['message' => 'This travel can\'t be cancelled'], 403);
         }
 
         $this->repository->updateStatus($id, $validated['status']);

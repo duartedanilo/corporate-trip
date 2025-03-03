@@ -243,4 +243,38 @@ class TravelOrderTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_cancel_travel_order()
+    {
+        TravelOrder::factory()->create([
+            'requester' => User::factory(),
+            'departure_date' => Carbon::now()->addDay(),
+            'return_date' => Carbon::now()->addWeek(),
+            'status' => 1,
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'cancelled']);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('travel_order', ['id' => 1, 'status' => 2]);
+    }
+
+    public function test_cancel_ongoing_travel()
+    {
+        TravelOrder::factory()->create([
+            'requester' => User::factory(),
+            'departure_date' => Carbon::now()->setTime(0, 0, 0, 0),
+            'return_date' => Carbon::now()->addWeek(),
+            'status' => 1,
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->patchJson('/api/travel-order/1/status', ['status' => 'cancelled']);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('travel_order', ['id' => 1, 'status' => 1]);
+    }
 }
