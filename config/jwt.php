@@ -151,7 +151,6 @@ return [
         'nbf',
         'sub',
         'jti',
-        'is_admin',
     ],
 
     /*
