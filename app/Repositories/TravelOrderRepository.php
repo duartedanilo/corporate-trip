@@ -2,13 +2,20 @@
 
 namespace App\Repositories;
 
+use App\Enums\Status;
 use App\Models\TravelOrder;
 
 class TravelOrderRepository
 {
-    public function getTravelOrderFromAuthenticatedUser(int $requester)
+    public function getTravelOrderFromAuthenticatedUser(int $requester, array $filter)
     {
-        return TravelOrder::where('requester', $requester)->get();
+        $travelOrder =  TravelOrder::where('requester', $requester);
+
+        if (isset($filter['status'])) {
+            $travelOrder->where('status', Status::fromName($filter['status']));
+        }
+
+        return $travelOrder->get();
     }
 
     public function create(array $data)

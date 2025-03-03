@@ -14,8 +14,10 @@ class TravelOrderController extends Controller
 
     public function index()
     {
+        $filter = request()->query();
+
         $requester = auth()->user()->id;
-        return $this->repository->getTravelOrderFromAuthenticatedUser($requester);
+        return $this->repository->getTravelOrderFromAuthenticatedUser($requester, $filter);
     }
 
     public function store(TravelOrderRequest $request)

@@ -13,18 +13,19 @@ class TravelOrderTest extends TestCase
     use RefreshDatabase;
 
     protected $token;
+    protected $user;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $user = User::factory()->create([
+        $this->user = User::factory()->create([
             'is_admin' => true
         ]);
-        $this->token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
+        $this->token = JWTAuth::claims(['is_admin' => $this->user->is_admin])->fromUser($this->user);
     }
 
-    public function test_list_travel_orders_with_success(): void
+    public function test_list_travel_orders(): void
     {
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
@@ -38,6 +39,39 @@ class TravelOrderTest extends TestCase
         $response = $this->get('/api/travel-order');
 
         $response->assertStatus(401);
+    }
+
+    public function test_list_travel_orders_filtered_by_status(): void
+    {
+        TravelOrder::factory()->create([
+            'requester' => $this->user,
+            'status' => 0
+        ]);
+
+        TravelOrder::factory(3)->create([
+            'requester' => $this->user,
+            'status' => 1
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order?status=approved');
+
+        $response->assertStatus(200)->assertJsonCount(3);
+    }
+
+    public function test_list_travel_orders_filtered_by_invalid_status(): void
+    {
+        TravelOrder::factory(3)->create([
+            'requester' => $this->user,
+            'status' => 1
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order?status=invalid');
+
+        $response->assertStatus(200)->assertJsonCount(0);
     }
 
     public function test_create_new_travel_order()
