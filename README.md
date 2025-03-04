@@ -23,12 +23,12 @@ Before clone this project, you will need git and Docker.
 
 First, you need to clone this repository to your machine.
 ```bash
-  git clone git@github.com:duartedanilo/corporate-trip.git
+  git clone git@github.com:duartedanilo/corporate-travel.git
 ```
 
 Go to the directory
 ```bash
-  cd corporate-trip
+  cd corporate-travel
 ```
 
 If you have composer installed in your machine, you can run the command
