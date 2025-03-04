@@ -1,7 +1,7 @@
 
-# Corporative travel
+# Corporate travel
 
-This project aim to manage corporative travel orders
+This project aims to manage corporate travel orders
 
 ## Main features
 - List travel orders
@@ -23,12 +23,12 @@ Before clone this project, you will need git and Docker.
 
 First, you need to clone this repository to your machine.
 ```bash
-  git clone git@github.com:duartedanilo/corporative-trip.git
+  git clone git@github.com:duartedanilo/corporate-trip.git
 ```
 
 Go to the directory
 ```bash
-  cd corporative-trip
+  cd corporate-trip
 ```
 
 If you have composer installed in your machine, you can run the command
