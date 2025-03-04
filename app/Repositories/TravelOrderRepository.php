@@ -48,5 +48,7 @@ class TravelOrderRepository
         $travelOrder = TravelOrder::findOrFail($id);
         $travelOrder->status = $status;
         $travelOrder->save();
+
+        return $travelOrder;
     }
 }

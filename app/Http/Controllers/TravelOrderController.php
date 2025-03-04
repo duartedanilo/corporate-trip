@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TravelOrderRequest;
 use App\Http\Requests\UpdateStatusRequest;
+use App\Mail\TravelOrderStatusUpdated;
 use App\Repositories\TravelOrderRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class TravelOrderController extends Controller
 {
@@ -51,7 +53,9 @@ class TravelOrderController extends Controller
             return response()->json(['message' => 'This travel can\'t be cancelled'], 403);
         }
 
-        $this->repository->updateStatus($id, $validated['status']);
+        $travelOrder = $this->repository->updateStatus($id, $validated['status']);
+
+        Mail::to($travelOrder->user)->send(new TravelOrderStatusUpdated($travelOrder, $travelOrder->status));
 
         return response()->json(['message' => 'Status updated successfully!']);
     }

@@ -18,7 +18,7 @@ class UserAdminMiddleware
         $payload = auth()->payload();
 
         if (!$payload['is_admin']) {
-            return response()->json(['error' => 'The user can\'t access this route because is not an admin'], 401);
+            return response()->json(['error' => 'Only admins are allowed to access this route.'], 401);
         }
 
         return $next($request);
