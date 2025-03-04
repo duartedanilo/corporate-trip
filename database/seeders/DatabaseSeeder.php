@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TravelOrder;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,6 +18,8 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 1
         ]);
 
-        User::factory(3)->create();
+        User::factory(3)->create()->each(function ($user) {
+            TravelOrder::factory(2)->create(['requester' => $user->id]);
+        });;
     }
 }
