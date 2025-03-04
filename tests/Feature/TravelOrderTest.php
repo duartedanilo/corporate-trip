@@ -171,7 +171,9 @@ class TravelOrderTest extends TestCase
 
     public function test_show_travel_order_by_id()
     {
-        TravelOrder::factory()->create();
+        TravelOrder::factory()->create([
+            'requester' => $this->user
+        ]);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
@@ -189,6 +191,19 @@ class TravelOrderTest extends TestCase
         ])->get('/api/travel-order/1');
 
         $response->assertStatus(404);
+    }
+
+    public function test_show_travel_order_from_other_requester()
+    {
+        TravelOrder::factory()->create([
+            'requester' => User::factory()
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+        ])->get('/api/travel-order/1');
+
+        $response->assertStatus(403);
     }
 
     public function test_update_status()

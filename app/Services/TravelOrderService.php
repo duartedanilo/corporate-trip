@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Mail\TravelOrderStatusUpdated;
 use App\Repositories\TravelOrderRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
@@ -30,7 +31,15 @@ class TravelOrderService
 
     public function show(string $id)
     {
-        return $this->repository->findById($id);
+        $travelOrder = $this->repository->findById($id);
+
+        if ($travelOrder->requester != Auth::id()) {
+            throw ValidationException::withMessages([
+                'status' => 'You are not the requester of this travel order.'
+            ]);
+        }
+
+        return $travelOrder;
     }
 
     public function updateStatus(int $id, string $status)

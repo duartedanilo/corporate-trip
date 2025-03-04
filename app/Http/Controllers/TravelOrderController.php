@@ -113,11 +113,16 @@ class TravelOrderController extends Controller
      *     ),
      *     @OA\Response(response="200", description="Get travel order information"),
      *     @OA\Response(response="401", description="Invalid credentials")
+     *     @OA\Response(response="403", description="You are not the requester of this travel order")
      * )
      */
     public function show(string $id)
     {
-        return $this->service->show($id);
+        try {
+            return $this->service->show($id);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
+        }
     }
 
     /**
