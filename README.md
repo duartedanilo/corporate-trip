@@ -80,5 +80,8 @@ To run tests, run the following command
   ./vendor/bin/sail artisan test
 ```
 
-## Other
+## API Documentation
+This project is using Swagger. Access it on [http://localhost/api/documentation](http://localhost/api/documentation).
+
+## User notification
 The e-mails on local environment are sent to [Mailpit](http://localhost:8025/). 
