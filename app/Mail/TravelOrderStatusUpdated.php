@@ -16,7 +16,7 @@ class TravelOrderStatusUpdated extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public TravelOrder $travelOrder, public $status) {}
+    public function __construct(public TravelOrder $travelOrder) {}
 
     /**
      * Get the message envelope.
@@ -38,7 +38,7 @@ class TravelOrderStatusUpdated extends Mailable
             with: [
                 'id' => $this->travelOrder->id,
                 'destination' => $this->travelOrder->destination,
-                'status' => $this->status,
+                'status' => $this->travelOrder->status,
             ]
         );
     }

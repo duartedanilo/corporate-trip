@@ -38,14 +38,13 @@ class TravelOrderRepository
         return TravelOrder::create($data);
     }
 
-    public function findById(int $id)
+    public function findById(int $id): TravelOrder
     {
         return TravelOrder::findOrFail($id);
     }
 
-    public function updateStatus(int $id, string $status)
+    public function updateStatus(TravelOrder $travelOrder, string $status)
     {
-        $travelOrder = TravelOrder::findOrFail($id);
         $travelOrder->status = $status;
         $travelOrder->save();
 
